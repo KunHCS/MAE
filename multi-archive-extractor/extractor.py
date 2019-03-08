@@ -1,30 +1,36 @@
 """
 Handles extraction for multiple archives
 """
-import subprocess
-from pathlib import Path
+from subprocess import Popen
+from sys import argv
+from collections import deque
+from pathlib import Path, PurePosixPath, PosixPath
+
+Q = deque()
+FORMATS = ('.zip', '.rar')
 
 
-def extract():
-    command = '7z x'
-    file_name = 'r4.rar'
-    file_path = Path(f'D:/Work/test/{file_name}')
+def enqueue(arg_list):
+    for path in arg_list:
+        if Path(path).is_dir():
+            enqueue([i for i in Path(path).iterdir()])
+        elif Path(path).is_file() and str(path).endswith(FORMATS):
+            Q.append(str(path))
 
-    # TODO: Use regex instead
-    out_dir = Path(f'-oD:/Work/test/{file_name.split(".")[0]}')
 
-    print(out_dir)
-    print(file_path)
-    # argument for calling 7z
-    args = command + file_path + out_dir
-    print(args)
-    # p = subprocess.Popen(args)
-    return
+def extract(archive):
+    command = f'7z x {archive} -pr4 -y -o{archive.split(".")[-2]}'
+    p = Popen(command)
+    # print(p.stdout)
 
 
 def main():
-    extract()
+    enqueue(argv)
+    for file in Q:
+        extract(file)
 
 
 if __name__ == "__main__":
     main()
+    print(Q)
+    print(len(Q))
