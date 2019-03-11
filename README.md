@@ -6,3 +6,5 @@ A multi process archive extractor using [7zip](https://www.7-zip.org/), aims to 
 - Allow the use of a password list to handle multiple archives with differnt password
 - Multiprocessing to increase efficiency when working with multiple archives
 
+## Usage
+	python main.py <folder>/<file>
