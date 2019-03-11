@@ -4,14 +4,14 @@ FORMATS = ('.zip', '.rar', '.7z')
 
 
 def enqueue(arg_list):
-    Q = list()
+    q = list()
     for path in arg_list:
         if Path(path).is_dir():
-            Q.extend(enqueue(i for i in Path(path).iterdir() if Path(
+            q.extend(enqueue(i for i in Path(path).iterdir() if Path(
                 path).is_dir()))
         elif Path(path).is_file() and str(path).endswith(FORMATS):
-            Q.append(str(path))
-    return Q
+            q.append(str(path))
+    return q
 
 
 def extract_pass(pwd_file):
