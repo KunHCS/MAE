@@ -5,6 +5,7 @@ __pycache__/
 
 .idea/
 pwd.txt
+freq.json
 
 # C extensions
 *.so

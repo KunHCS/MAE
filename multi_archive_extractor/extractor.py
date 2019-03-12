@@ -5,6 +5,7 @@ from subprocess import Popen, PIPE
 from shutil import rmtree
 import multiprocessing
 import os
+import json
 
 
 def extract(archive, add_prefix=False, pwd_list=None):
@@ -12,6 +13,7 @@ def extract(archive, add_prefix=False, pwd_list=None):
     ignore = False
     prefix = 'zzz_'
     correct_pass = ''
+    return_code = -1
     out_path = os.path.splitext(archive)[0]
     path_split = os.path.split(archive)
     file_name = path_split[1]
@@ -25,23 +27,25 @@ def extract(archive, add_prefix=False, pwd_list=None):
             break
 
         args = ['7z', 'x', archive, f'-p{pwd}', '-y', f'-o{out_path}']
-        p = Popen(args, stderr=PIPE, stdout=PIPE)
-        p.communicate()
-        if p.returncode == 0:
+        with Popen(args, stderr=PIPE, stdout=PIPE) as p:
+            p.communicate()
+            return_code = p.returncode
+
+        if return_code == 0:
             correct_pass = pwd
             success = True
 
     # deleted empty files and directory from 7z
     if success:
-        print('#', end='')
+        print('o', end=' ')
         if add_prefix and not file_name.startswith(prefix):
             os.rename(archive, os.path.join(path_split[0], prefix+file_name))
     else:
-        print('x', end='')
+        print('x', end=' ')
         rmtree(out_path, ignore_errors=True)
 
     result = {'success': success, 'file': file_name, 'ignored': ignore,
-              'password': correct_pass}
+              'password': correct_pass, 'ret_code': return_code}
     return result
 
 
@@ -60,6 +64,7 @@ def mp_extraction(file_queue, prefix, pwd):
     failed_msg = ''
     freq = dict()
     for info in output:
+        print(info['ret_code'], end=' ')
         if info['success']:
             success_msg += f'Success: {info["file"]}\n' if not info[
                 'ignored'] else f'Ignored: {info["file"]}\n'
@@ -68,8 +73,8 @@ def mp_extraction(file_queue, prefix, pwd):
             failed_msg += f'Failed:  {info["file"]}\n'
         freq[info['password']] = freq.get(info['password'], 0) + 1
         freq.pop('', None)
-
-    print(freq)
+    print()
+    print(json.dumps(freq, indent=4))
     print(success_msg)
     print(failed_msg)
     print(f'\n{success_count} out of {len(file_queue)} succeeded')
