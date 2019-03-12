@@ -17,7 +17,7 @@ def enqueue(arg_list):
 def extract_pass(pwd_file):
     try:
         with open(pwd_file, 'r', encoding='utf-8-sig') as file:
-            return file.read().splitlines()
+            return [''] + file.read().splitlines()
 
     except FileNotFoundError:
         with open('pwd.txt', 'w+', encoding='UTF-8'):
