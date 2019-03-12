@@ -5,10 +5,9 @@ from subprocess import Popen, PIPE
 from shutil import rmtree
 import multiprocessing
 import os
-import json
 
 
-def extract(archive, add_prefix=False, pwd_list=None):
+def extract(archive, has_prefix=False, pwd_list=None):
     success = False
     ignore = False
     prefix = 'zzz_'
@@ -35,13 +34,12 @@ def extract(archive, add_prefix=False, pwd_list=None):
             correct_pass = pwd
             success = True
 
-    # deleted empty files and directory from 7z
     if success:
-        print('o', end=' ')
-        if add_prefix and not file_name.startswith(prefix):
+        print('o', end='')
+        if has_prefix and not file_name.startswith(prefix):
             os.rename(archive, os.path.join(path_split[0], prefix+file_name))
     else:
-        print('x', end=' ')
+        print('x', end='')
         rmtree(out_path, ignore_errors=True)
 
     result = {'success': success, 'file': file_name, 'ignored': ignore,
@@ -49,32 +47,14 @@ def extract(archive, add_prefix=False, pwd_list=None):
     return result
 
 
-def mp_extraction(file_queue, prefix, pwd):
+def mp_extraction(file_queue, has_prefix, pwd):
     if not file_queue:
         print('No supported files')
         return
 
-    map_args = [(file, prefix, pwd) for file in file_queue]
+    map_args = [(file, has_prefix, pwd) for file in file_queue]
     with multiprocessing.Pool() as pool:
         output = pool.starmap(extract, map_args)
 
-    print('')
-    success_count = 0
-    success_msg = ''
-    failed_msg = ''
-    freq = dict()
-    for info in output:
-        print(info['ret_code'], end=' ')
-        if info['success']:
-            success_msg += f'Success: {info["file"]}\n' if not info[
-                'ignored'] else f'Ignored: {info["file"]}\n'
-            success_count += 1
-        else:
-            failed_msg += f'Failed:  {info["file"]}\n'
-        freq[info['password']] = freq.get(info['password'], 0) + 1
-        freq.pop('', None)
-    print()
-    print(json.dumps(freq, indent=4))
-    print(success_msg)
-    print(failed_msg)
-    print(f'\n{success_count} out of {len(file_queue)} succeeded')
+    return output
+

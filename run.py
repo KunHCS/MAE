@@ -1,4 +1,7 @@
-from multi_archive_extractor.setup import enqueue, extract_pass
+"""
+Runs the main program
+"""
+from multi_archive_extractor.utils import enqueue, extract_pass, process_output
 from multi_archive_extractor.extractor import mp_extraction
 import argparse
 
@@ -17,7 +20,8 @@ def main():
     # print(file_queue)
     pwd = extract_pass(args.password)
     print(pwd)
-    mp_extraction(file_queue, args.rename, pwd)
+    output = mp_extraction(file_queue, args.rename, pwd)
+    process_output(output)
 
 
 if __name__ == "__main__":
