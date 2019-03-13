@@ -1,4 +1,4 @@
-# Multi-Archive-Extractor (MAE)
+# Multi Archive Extractor (MAE)
 A multi process archive extractor using [7zip](https://www.7-zip.org/), aims to efficiently extractor multiple archives at once.
 
 ## Features
