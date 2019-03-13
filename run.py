@@ -11,11 +11,16 @@ def main():
     parser.add_argument('-s', '--shrink', action='store_true',
                         help='shrink output directory tree if applicable')
     parser.add_argument('-r', '--rename', action='store_true',
-                        help='prefix original archive with zzz_ on completion')
+                        help='prefix original archive with zzz_ upon '
+                             'successful extraction')
     parser.add_argument('-p', '--password', type=str, default='pwd.txt',
-                        help='optional password text file', metavar='')
+                        help='[-p <file>.txt] optional password text '
+                             'file, defaults to pwd.txt file in program root',
+                        metavar='')
     parser.add_argument('-e', '--extract', type=str, required=True,
-                        help='file/directory to extract', metavar='')
+                        help='[-e <directory>/<file(s)>] specify file(s)'
+                             '/directory to '
+                             'extract', metavar='')
     args = parser.parse_args()
 
     file_queue = enqueue([args.extract])
