@@ -3,11 +3,20 @@ Handles extraction for multiple archives
 """
 from subprocess import Popen, PIPE
 from shutil import rmtree
+from .utils import shrink_dir
 import multiprocessing
 import os
 
 
-def extract(archive, has_prefix=False, pwd_list=None):
+def extract(archive=None, add_prefix=False, pwd_list=None, shrink=False):
+    """
+    Extracts an archive using 7z checking over a password list
+    :param archive:
+    :param add_prefix:
+    :param pwd_list:
+    :param shrink:
+    :return:
+    """
     success = False
     ignore = False
     prefix = 'zzz_'
@@ -36,8 +45,11 @@ def extract(archive, has_prefix=False, pwd_list=None):
 
     if success:
         print('o', end='')
-        if has_prefix and not file_name.startswith(prefix):
-            os.rename(archive, os.path.join(path_split[0], prefix+file_name))
+        if add_prefix and not file_name.startswith(prefix):
+            os.rename(archive, os.path.join(path_split[0], prefix + file_name))
+
+        if shrink:
+            shrink_dir(out_path)
     else:
         print('x', end='')
         rmtree(out_path, ignore_errors=True)
@@ -47,14 +59,21 @@ def extract(archive, has_prefix=False, pwd_list=None):
     return result
 
 
-def mp_extraction(file_queue, has_prefix, pwd):
+def mp_extraction(file_queue, pwd, has_prefix, shrink):
+    """
+    Extracts all archives in file_queue in parallel
+    :param file_queue:
+    :param pwd:
+    :param has_prefix:
+    :param shrink:
+    :return:
+    """
     if not file_queue:
         print('No supported files')
         return
 
-    map_args = [(file, has_prefix, pwd) for file in file_queue]
+    map_args = [(file, has_prefix, pwd, shrink) for file in file_queue]
     with multiprocessing.Pool() as pool:
         output = pool.starmap(extract, map_args)
 
     return output
-
