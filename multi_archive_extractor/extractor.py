@@ -21,6 +21,7 @@ def extract(archive=None, add_prefix=False, pwd_list=None, shrink=False):
     ignore = False
     prefix = 'zzz_'
     correct_pass = ''
+    err = b''
     return_code = -1
     out_path = os.path.splitext(archive)[0]
     path_split = os.path.split(archive)
@@ -36,7 +37,7 @@ def extract(archive=None, add_prefix=False, pwd_list=None, shrink=False):
 
         args = ['7z', 'x', archive, f'-p{pwd}', '-y', f'-o{out_path}']
         with Popen(args, stderr=PIPE, stdout=PIPE) as p:
-            p.communicate()
+            _, err = p.communicate()
             return_code = p.returncode
 
         if return_code == 0:
@@ -55,7 +56,8 @@ def extract(archive=None, add_prefix=False, pwd_list=None, shrink=False):
         rmtree(out_path, ignore_errors=True)
 
     result = {'success': success, 'file': file_name, 'ignored': ignore,
-              'password': correct_pass, 'ret_code': return_code}
+              'password': correct_pass, 'ret_code': return_code, 'error':
+                  err.decode('utf-8')}
     return result
 
 

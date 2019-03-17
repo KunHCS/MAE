@@ -60,6 +60,10 @@ def process_result(output):
             success_count += 1
         else:
             failed_msg += f'Failed (err {info["ret_code"]}): {info["file"]}\n'
+            err = info['error'] if len(info['error'].splitlines()) < 2 else \
+                ''.join(line+'\n' for line in info['error'].splitlines()[
+                                              :3])+'......'
+            failed_msg += f'Error Message:\n{err}\n\n'
         freq[info['password']] = freq.get(info['password'], 0) + 1
         freq.pop('', None)
     print()
