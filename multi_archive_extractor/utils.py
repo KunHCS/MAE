@@ -46,13 +46,14 @@ def process_result(output):
     :param output:
     :return:
     """
+    if not output:
+        return
     print('')
     success_count = 0
     success_msg = ''
     failed_msg = ''
     freq = dict()
     for info in output:
-        print(info['ret_code'], end=' ')
         if info['success']:
             suffix = f' ({info["password"]})' if info["password"] else ''
             success_msg += f'Success:{suffix} {info["file"]}\n' \
@@ -66,8 +67,9 @@ def process_result(output):
             failed_msg += f'Error Message:\n{err}\n\n'
         freq[info['password']] = freq.get(info['password'], 0) + 1
         freq.pop('', None)
-    print()
+    print('Passwords used:')
     print(json.dumps(freq, indent=4))
+    print()
     print(success_msg)
     print(failed_msg)
     print(f'\n{success_count} out of {len(output)} succeeded')

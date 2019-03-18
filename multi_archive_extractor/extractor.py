@@ -27,6 +27,7 @@ def extract(archive=None, add_prefix=False, pwd_list=None, shrink=False):
     path_split = os.path.split(archive)
     file_name = path_split[1]
 
+    print('Started: ', archive)
     if file_name.startswith(prefix):
         ignore = True
         success = True
@@ -38,26 +39,24 @@ def extract(archive=None, add_prefix=False, pwd_list=None, shrink=False):
         args = ['7z', 'x', archive, f'-p{pwd}', '-y', f'-o{out_path}']
         with Popen(args, stderr=PIPE, stdout=PIPE) as p:
             _, err = p.communicate()
-            return_code = p.returncode
+        return_code = p.returncode
 
         if return_code == 0:
             correct_pass = pwd
             success = True
-
     if success:
-        print('o', end='')
         if add_prefix and not file_name.startswith(prefix):
             os.rename(archive, os.path.join(path_split[0], prefix + file_name))
 
         if shrink:
             shrink_dir(out_path)
     else:
-        print('x', end='')
         rmtree(out_path, ignore_errors=True)
 
     result = {'success': success, 'file': file_name, 'ignored': ignore,
               'password': correct_pass, 'ret_code': return_code, 'error':
                   err.decode('utf-8')}
+    print('Done: ', archive)
     return result
 
 

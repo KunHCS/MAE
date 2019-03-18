@@ -4,6 +4,7 @@ Parse user inputs, initiates main program
 from multi_archive_extractor.utils import enqueue, extract_pass, process_result
 from multi_archive_extractor.extractor import mp_extraction
 import argparse
+import time
 
 
 def main():
@@ -31,4 +32,8 @@ def main():
 
 
 if __name__ == "__main__":
+    start = time.time()
     main()
+    end = time.time()
+    print(f'Elapsed Time: {end - start:.2f} Seconds')
+
