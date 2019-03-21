@@ -106,7 +106,5 @@ def shrink_dir(out_path):
                 suffix = f'_{count}'
             else:
                 retry = False
-        rmtree(out_path)
-
-
+        rmtree(out_path, ignore_errors=True)
 

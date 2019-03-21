@@ -52,10 +52,13 @@ def extract(archive=None, add_prefix=False, pwd_list=None, shrink=False):
             shrink_dir(out_path)
     else:
         rmtree(out_path, ignore_errors=True)
-
+    try:
+        fail_err = err.decode('utf-8')
+    except UnicodeDecodeError as e:
+        fail_err = str(e)
     result = {'success': success, 'file': file_name, 'ignored': ignore,
               'password': correct_pass, 'ret_code': return_code, 'error':
-                  err.decode('utf-8')}
+                  fail_err}
     print('Done: ', archive)
     return result
 
