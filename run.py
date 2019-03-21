@@ -14,7 +14,9 @@ def main():
     parser.add_argument('-r', '--rename', action='store_true',
                         help='prefix original archive with zzz_ upon '
                              'successful extraction')
-    parser.add_argument('-p', '--password', type=str, default='pwd.txt',
+    parser.add_argument('-p', '--password',
+                        type=argparse.FileType('r', encoding='UTF-8'),
+                        default='pwd.txt',
                         help='[-p <file>.txt] optional password text '
                              'file, defaults to pwd.txt file in program root',
                         metavar='')
@@ -23,7 +25,6 @@ def main():
                              '/directory to '
                              'extract', metavar='')
     args = parser.parse_args()
-
     file_queue = enqueue([args.extract])
     pwd = extract_pass(args.password)
     print(pwd)
