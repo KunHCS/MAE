@@ -36,7 +36,7 @@ def extract_pass(pwd_file):
             return [''] + file.read().splitlines()
 
     except FileNotFoundError:
-        with open('pwd.txt', 'w+', encoding='UTF-8'):
+        with open('pwd.txt', 'x', encoding='UTF-8'):
             return list()
 
 
